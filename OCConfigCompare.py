@@ -173,7 +173,7 @@ class OCCC:
         change_list = []
         # Compare 2 collections and print anything that's in compare_from that's not in compare_to
         if type(compare_from) != type(compare_to): # Should only happen if it's top level differences
-            change_list.append("{} - Type Difference: {} --> {}".format(path,self.get_type(compare_to),self.get_type(compare_from)))
+            change_list.append("{} - Type Difference: {}  <<--->>  {}".format(path,self.get_type(compare_to),self.get_type(compare_from)))
         elif isinstance(compare_from,self.dict_types):
             # Let's compare keys
             not_keys = self.get_valid_keys([x for x in list(compare_from) if not x in list(compare_to)])
@@ -186,7 +186,7 @@ class OCCC:
                 if self.starts_with(x): continue # Skipping this due to prefix
                 if type(compare_from[x]) != type(compare_to[x]):
                     if to_copy: compare_copy[x] = compare_from[x]
-                    change_list.append("{} - Type Difference: {} --> {}".format(path+" -> "+x,self.get_type(compare_to[x]),self.get_type(compare_from[x])))
+                    change_list.append("{} - Type Difference: {}  <<--->>  {}".format(path+" -> "+x,self.get_type(compare_to[x]),self.get_type(compare_from[x])))
                     continue # Move forward as all underlying values will be different too
                 if isinstance(compare_from[x],list) or isinstance(compare_from[x],self.dict_types):
                     change_list.extend(self.compare_value(
@@ -200,7 +200,7 @@ class OCCC:
                     ))
                 elif compare_values and compare_from[x] != compare_to[x]:
                     # Checking all values - and our value is different
-                    change_list.append("{} - Value Difference: {} --> {}".format(
+                    change_list.append("{} - Value Difference: {}  <<--->>  {}".format(
                         path+" -> "+x,
                         self.get_value(compare_to[x]),
                         self.get_value(compare_from[x])
@@ -244,7 +244,7 @@ class OCCC:
                         ))
         elif compare_values and compare_from != compare_to:
             # Just for checking top level non-collection values
-            change_list.append("{} - Value Difference: {} --> {}".format(
+            change_list.append("{} - Value Difference: {}  <<--->>  {}".format(
                 path+" -> "+x,
                 self.get_value(compare_to),
                 self.get_value(compare_from)
