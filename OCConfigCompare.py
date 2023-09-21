@@ -89,7 +89,7 @@ class OCCC:
 
     def compare(self,hide=False):
         # First make sure we have plist info
-        c = self.get_plist("user config.plist",self.current_config,hide=hide)
+        c = self.get_plist("cur.plist",self.current_config,hide=hide)
         if c is None:
             return
         self.current_config,self.current_plist = c
@@ -293,11 +293,11 @@ class OCCC:
             else:
                 self.u.head()
                 print("")
-                print("M. Return to Menu")
+                print("B. Back")
                 print("Q. Quit")
                 print("")
                 m = self.u.grab("Please drag and drop the {} file:  ".format(plist_name))
-                if m.lower() == "m":
+                if m.lower() == "b":
                     return None
                 elif m.lower() == "q":
                     self.u.custom_quit()
@@ -457,11 +457,11 @@ class OCCC:
             if p is not None:
                 self.sample_config,self.sample_plist = p
         elif m == "1":
-            p = self.get_plist("OC Sample.plist")
+            p = self.get_plist("pre.plist")
             if p is not None:
                 self.sample_config,self.sample_plist = p
         elif m == "2":
-            p = self.get_plist("user config.plist")
+            p = self.get_plist("cur.plist")
             if p is not None:
                 self.current_config,self.current_plist = p
         elif m == "s":
