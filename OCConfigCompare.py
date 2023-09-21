@@ -105,7 +105,7 @@ class OCCC:
             self.u.head()
             print("\nGathering differences...")
         p_string = ""
-        p_string += "\nChecking for values missing from User plist:\n\n"
+        p_string += "\nModified items   -   Current plist Values :\n\n"
         user_copy = copy.deepcopy(self.current_plist) if self.settings.get("update_user",False) else None
         user_missing = self.compare_value(
             self.sample_plist,
@@ -117,7 +117,7 @@ class OCCC:
             compare_in_arrays=self.settings.get("compare_in_arrays",False)
         )
         p_string += "\n".join(user_missing) if len(user_missing) else " - Nothing missing from User config!"
-        p_string += "\n\nChecking for values missing from Sample:\n\n"
+        p_string += "\n\nNew items   -   which previous plist doesnt have :\n\n"
         sample_copy = copy.deepcopy(self.sample_plist) if self.settings.get("update_sample",False) else None
         sample_missing = self.compare_value(
             self.current_plist,
@@ -374,25 +374,25 @@ class OCCC:
                 "True (+ Arrays)" if self.settings.get("compare_in_arrays") else "True" if self.settings.get("compare_values") else "False"
             ))
             print("")
+            print("A. Show All Keys")
+            print("T. Toggle Compare Values")
             print("1. Hide Only Keys Starting With #")
             print("2. Hide comments (#), PciRoot, and most OC NVRAM samples")
-            print("3. Add New Custom Prefix")
-            print("4. Remove Prefix")
-            print("5. Show All Keys")
-            print("6. {} Warnings".format("Show" if self.settings.get("suppress_warnings",True) else "Suppress"))
-            print("7. Toggle Compare Values")
+            print("3. {} Warnings".format("Show" if self.settings.get("suppress_warnings",True) else "Suppress"))
+            print("8. Add New Custom Prefix")
+            print("9. Remove Prefix")
             print("")
-            print("M. Main Menu")
+            print("B. Back")
             print("Q. Quit")
             print("")
             menu = self.u.grab("Please select an option:  ")
-            if menu.lower() == "m": return
+            if menu.lower() == "b": return
             elif menu.lower() == "q": self.u.custom_quit()
             elif menu == "1":
                 self.settings["hide_with_prefix"] = "#"
             elif menu == "2":
                 self.settings["hide_with_prefix"] = ["#","PciRoot","4D1EDE05-","4D1FDA02-","7C436110-","8BE4DF61-"]
-            elif menu == "3":
+            elif menu == "8":
                 new_prefix = self.custom_hide_prefix()
                 if not new_prefix: continue # Nothing to add
                 prefixes = self.settings.get("hide_with_prefix",self.default_hide)
@@ -405,13 +405,13 @@ class OCCC:
                     if prefixes == new_prefix: continue # Already set to that
                     prefixes = [prefixes,new_prefix] # Is a string, probably
                 self.settings["hide_with_prefix"] = prefixes
-            elif menu == "4":
+            elif menu == "9":
                 self.settings["hide_with_prefix"] = self.remove_prefix()
-            elif menu == "5":
+            elif menu == "a":
                 self.settings["hide_with_prefix"] = None
-            elif menu == "6":
+            elif menu == "3":
                 self.settings["suppress_warnings"] = not self.settings.get("suppress_warnings",True)
-            elif menu == "7":
+            elif menu == "t":
                 if self.settings.get("compare_in_arrays"): # Disable all
                     self.settings["compare_in_arrays"] = self.settings["compare_values"] = False
                 elif self.settings.get("compare_values"): # Switch to arrays
@@ -429,8 +429,8 @@ class OCCC:
         if self.settings.get("resize_window",True): self.u.resize(self.w,self.h)
         self.u.head()
         print("")
-        print("Current Config:        {}".format(self.current_config))
-        print("OC Sample Config:      {}".format(self.sample_config))
+        print("Previous plist (old one):      {}".format(self.sample_config))
+        print("Current plist (new one):        {}".format(self.current_config))
         print("Key Hide Prefixes:     {}".format(self.print_hide_keys()))
         print("Prefix Case-Sensitive: {}".format(self.settings.get("prefix_case_sensitive",True)))
         print("Suppress Warnings:     {}".format(self.settings.get("suppress_warnings",True)))
@@ -438,13 +438,13 @@ class OCCC:
             "True (+ Arrays)" if self.settings.get("compare_in_arrays") else "True" if self.settings.get("compare_values") else "False"
         ))
         print("")
-        print("1. Get Latest Release Sample.plist")
-        print("2. Get Latest Commit Sample.plist")
-        print("3. Select Local Sample.plist")
-        print("4. Select Local User Config.plist")
-        print("5. Change Key Hide Prefixes/Warnings/Compare Values")
-        print("6. Toggle Prefix Case-Sensitivity")
-        print("7. Compare (will use latest Sample.plist if none selected)")
+        print(" ")
+        print(" ")
+        print("1. Select pre.plist")
+        print("2. Select cur.plist")
+        print("S. Change Key Hide Prefixes/Warnings/Compare Values")
+        print("T. Toggle Prefix Case-Sensitivity")
+        print("C. Compare (will use latest Sample.plist if none selected)")
         print("")
         print("Q. Quit")
         print("")
@@ -452,24 +452,24 @@ class OCCC:
         if m == "q":
             if self.settings.get("resize_window",True): self.u.resize(self.w,self.h)
             self.u.custom_quit()
-        elif m in ("1","2"):
+        elif m in ("8","9"):
             p = self.get_latest(use_release=m=="1")
             if p is not None:
                 self.sample_config,self.sample_plist = p
-        elif m == "3":
+        elif m == "1":
             p = self.get_plist("OC Sample.plist")
             if p is not None:
                 self.sample_config,self.sample_plist = p
-        elif m == "4":
+        elif m == "2":
             p = self.get_plist("user config.plist")
             if p is not None:
                 self.current_config,self.current_plist = p
-        elif m == "5":
+        elif m == "s":
             self.hide_key_prefix()
-        elif m == "6":
+        elif m == "t":
             self.settings["prefix_case_sensitive"] = not self.settings.get("prefix_case_sensitive",True)
             self.save_settings()
-        elif m == "7":
+        elif m == "c":
             self.compare()
 
     def cli(self, user_plist = None, sample_plist = None, use_release = False):
